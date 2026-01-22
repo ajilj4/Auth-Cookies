@@ -31,6 +31,16 @@ public class ProfileServiceImp implements ProfileService{
         return convertToProfileRes(newUser);
     }
 
+    @Override
+    public ProfileRes getProfile(String email) {
+
+        UserEntity user = userRepo.findByEmail(email)
+                .orElseThrow(()->new UsernameNotFoundException("User not fount"));
+
+return convertToProfileRes(user);
+    }
+
+
     private UserEntity convertToUserEntity(ProfileReq request) {
         return UserEntity.builder()
                 .name(request.getName())

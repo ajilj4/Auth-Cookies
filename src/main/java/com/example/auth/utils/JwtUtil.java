@@ -1,7 +1,7 @@
 package com.example.auth.utils;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -12,6 +12,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 
 @Component
 public class JwtUtil {
@@ -33,7 +34,34 @@ public class JwtUtil {
                 .subject(user.getUsername())
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + JWT_EXPIRATION_MS))
-                .signWith(signingKey(), SignatureAlgorithm.HS256)
+                .signWith(signingKey())
                 .compact();
+    }
+
+    private Claims extractAllClaims(String token){
+        return Jwts.parser()
+                .verifyWith(signingKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+    }
+
+    public <T> T extractClaims(String token, Function<Claims,T> function){
+        Claims claims = extractAllClaims(token);
+        return function.apply(claims);
+    }
+
+    public String extractUsername(String token) {
+
+        return extractClaims(token,Claims::getSubject);
+
+    }
+
+    public boolean validateToKen(String token, UserDetails user) {
+
+        String username = extractUsername(token);
+        Date expiratedate = extractClaims(token,Claims::getExpiration);
+
+        return username.equals(user.getUsername()) && expiratedate.after(new Date());
     }
 }

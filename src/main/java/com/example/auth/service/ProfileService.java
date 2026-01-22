@@ -6,4 +6,8 @@ import com.example.auth.io.ProfileRes;
 public interface ProfileService {
 
     ProfileRes createProfile(ProfileReq profileReq);
+
+    ProfileRes getProfile(String email);
+
+    ;
 }
