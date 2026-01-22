@@ -9,5 +9,7 @@ public interface ProfileService {
 
     ProfileRes getProfile(String email);
 
+    String resetPasswordOtp(String email);
+
     ;
 }

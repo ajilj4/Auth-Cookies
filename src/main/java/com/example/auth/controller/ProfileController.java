@@ -34,4 +34,9 @@ public class ProfileController {
     public ProfileRes getProfile(@CurrentSecurityContext(expression = "authentication.name") String email){
       return profileServiceImp.getProfile(email);
     }
+
+    @PostMapping("/resetPasswordOtp")
+    public String resetPasswordOtp(@RequestParam String email){
+        return profileServiceImp.resetPasswordOtp(email);
+    }
 }
